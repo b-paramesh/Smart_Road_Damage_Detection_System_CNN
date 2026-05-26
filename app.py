@@ -84,7 +84,7 @@ st.markdown(
     }
     
     .stSuccess {
-        border-left: 5px solid #38bdf8 !important; /* Unified Theme Accent Color */
+        border-left: 5px solid #38bdf8 !important;
     }
     .stError {
         border-left: 5px solid #ef4444 !important;
@@ -105,7 +105,6 @@ st.markdown(
 # -------------------
 
 def create_model():
-    # Programmatic reconstruction of the exact CNN model architecture from training
     model = tf.keras.Sequential([
         tf.keras.layers.Input(shape=(224, 224, 3)),
         tf.keras.layers.Conv2D(32, (3, 3), activation='relu', name='conv2d'),
@@ -124,8 +123,6 @@ def create_model():
 @st.cache_resource
 def load():
     model = create_model()
-    
-    # Load weights directly to bypass the version-mismatched Keras JSON deserializer
     loaded = False
     for name in ["road_damage_cnn_model.keras", "road_damage_cnn_model.h5"]:
         if os.path.exists(name):
@@ -157,7 +154,6 @@ labels = {
 def preprocess(img):
     img = img.resize((224, 224))
     img = np.array(img)
-    # Convert RGBA to RGB if needed
     if img.shape[-1] == 4:
         img = img[..., :3]
     img = img / 255.0
@@ -178,16 +174,20 @@ st.markdown('<h2 class="section-header">SECTION 2 — About the Project</h2>', u
 st.markdown(
     """
     <div class="card">
-        <h3 style="color: #38bdf8; margin-top: 0;">Project Context & Architecture</h3>
-        <p><b>Why Road Monitoring is Important:</b> Maintaining high-quality road conditions is critical for safety and efficiency. Regular monitoring reduces traffic accidents, prevents vehicle wear and tear, minimizes repair expenses, and ensures the long-term sustainability of municipal infrastructure.</p>
-        <p><b>Role of CNN in Computer Vision:</b> Convolutional Neural Networks (CNNs) are the backbone of modern computer vision. CNNs automatically extract spatial hierarchies of features from raw images—going from basic edges to complex textures and objects. This process is shift-invariant and allows high-accuracy classification under varying illumination and weather conditions.</p>
-        <p><b>Practical Industry Applications:</b>
-            <ul style="margin-top: 0; padding-left: 20px;">
-                <li><b>Municipal Maintenance Dispatch:</b> Automating work orders for repair crews</li>
-                <li><b>Autonomous Vehicles:</b> Enabling real-time road obstacle and damage avoidance</li>
-                <li><b>Infrastructure Asset Management:</b> Performing large-scale highway health assessment from dashcam video feeds</li>
-            </ul>
-        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(285px, 1fr)); gap: 20px;">
+            <div>
+                <h4 style="color: #38bdf8; margin: 0 0 8px 0; font-size: 1.1rem;">🛡️ Importance</h4>
+                <p style="font-size: 0.95rem; margin: 0; color: #cbd5e1; line-height: 1.45;">Critical for public safety. Reduces severe vehicle accidents, limits tyre damage, and reduces high municipal repair costs.</p>
+            </div>
+            <div>
+                <h4 style="color: #818cf8; margin: 0 0 8px 0; font-size: 1.1rem;">🧠 CNN Classification</h4>
+                <p style="font-size: 0.95rem; margin: 0; color: #cbd5e1; line-height: 1.45;">Automatically extracts spatial hierarchies (edges to object textures) to perform robust predictions in real-time.</p>
+            </div>
+            <div>
+                <h4 style="color: #c084fc; margin: 0 0 8px 0; font-size: 1.1rem;">🚀 Practical Applications</h4>
+                <p style="font-size: 0.95rem; margin: 0; color: #cbd5e1; line-height: 1.45;">Real-time automated city monitoring, proactive crew dispatch, and autonomous vehicle navigation safety.</p>
+            </div>
+        </div>
     </div>
     """,
     unsafe_allow_html=True
@@ -227,16 +227,67 @@ if file:
     else:
         severity = "Low"
 
+    # Define glowing card variables matching severity
+    if severity == "High":
+        glow_color = "#ef4444"
+        bg_glow = "rgba(239, 68, 68, 0.08)"
+        border_glow = "rgba(239, 68, 68, 0.4)"
+        badge_icon = "🚨"
+    elif severity == "Medium":
+        glow_color = "#f59e0b"
+        bg_glow = "rgba(245, 158, 11, 0.08)"
+        border_glow = "rgba(245, 158, 11, 0.4)"
+        badge_icon = "⚠️"
+    else:
+        glow_color = "#38bdf8"
+        bg_glow = "rgba(56, 189, 248, 0.08)"
+        border_glow = "rgba(56, 189, 248, 0.4)"
+        badge_icon = "ℹ️"
+
     with col2:
         # =====================================================================
         # SECTION 5 — Prediction Area
         # =====================================================================
         st.markdown('<h2 class="section-header">SECTION 5 — Prediction Area</h2>', unsafe_allow_html=True)
         
-        st.success(
-            f"🎯 **Prediction:** {label}  \n"
-            f"📊 **Confidence:** {conf:.2f}%  \n"
-            f"⚠️ **Severity Level:** {severity}"
+        # Giant glowing result highlight card
+        st.markdown(
+            f"""
+            <div style="
+                background: {bg_glow};
+                border: 2px solid {border_glow};
+                border-radius: 16px;
+                padding: 24px;
+                box-shadow: 0 0 25px {border_glow};
+                text-align: center;
+                margin-bottom: 25px;
+            ">
+                <span style="font-size: 2.8rem;">{badge_icon}</span>
+                <h3 style="color: #ffffff; margin: 10px 0 5px 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.9;">Analysis Result</h3>
+                <h1 style="
+                    color: {glow_color} !important; 
+                    font-size: 2.8rem !important; 
+                    font-weight: 800 !important; 
+                    margin: 5px 0 !important;
+                    background: none !important;
+                    -webkit-text-fill-color: initial !important;
+                    text-shadow: 0 0 10px {border_glow} !important;
+                ">
+                    {label.upper()}
+                </h1>
+                <div style="display: flex; justify-content: center; gap: 20px; margin-top: 18px;">
+                    <div style="background: rgba(255,255,255,0.04); padding: 10px 20px; border-radius: 10px; min-width: 120px;">
+                        <span style="color: #cbd5e1; font-size: 0.8rem; display: block; margin-bottom: 2px;">CONFIDENCE</span>
+                        <strong style="color: #ffffff; font-size: 1.3rem;">{conf:.2f}%</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.04); padding: 10px 20px; border-radius: 10px; min-width: 120px;">
+                        <span style="color: #cbd5e1; font-size: 0.8rem; display: block; margin-bottom: 2px;">SEVERITY</span>
+                        <strong style="color: {glow_color}; font-size: 1.3rem;">{severity.upper()}</strong>
+                    </div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
         # =====================================================================
@@ -269,10 +320,9 @@ if file:
     st.subheader("Class Confidence Probability Chart")
     
     fig, ax = plt.subplots(figsize=(8, 3.5))
-    fig.patch.set_facecolor('none')  # Transparent background for seamless look
+    fig.patch.set_facecolor('none')
     ax.set_facecolor('none')
     
-    # Unified bar color theme (#38bdf8) throughout the entire chart
     theme_color = '#38bdf8'
     bars = ax.bar(
         [name.replace(" Detected", "") for name in labels.values()],
@@ -282,7 +332,6 @@ if file:
         width=0.4
     )
     
-    # Custom spines and grid
     ax.spines['bottom'].set_color('#cbd5e1')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -292,7 +341,6 @@ if file:
     ax.set_ylabel('Confidence (%)', color='#cbd5e1', fontsize=12)
     ax.set_ylim(0, 110)
     
-    # Value annotations on top of each bar
     for bar in bars:
         height = bar.get_height()
         ax.annotate(f'{height:.1f}%',
