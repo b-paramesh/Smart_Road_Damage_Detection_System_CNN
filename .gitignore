@@ -1,8 +1,5 @@
-__pycache__/
-.ipynb_checkpoints/
-
-venv/
-
-*.pyc
-
-.DS_Store
+# Ignore large model files exceeding GitHub's 100MB limit
+road_damage_cnn_model.h5
+road_damage_cnn_model.keras
+road_damage_cnn_model.weights.h5
+model.weights.h5
